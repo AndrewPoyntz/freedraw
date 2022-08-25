@@ -51,18 +51,19 @@ freedrawEvent = function(event) {
 }
 drawPoly = function (latLngs) {
 	// console.log('create poly with', latLngs)
-
+	let numPoints = 'Points in last drawn shape:'
 	const polygon = L.polygon(latLngs);
 	// console.log(polygon.toGeoJSON())
 
 	if ($('#smoothing').is(':checked'))  {
-		drawSmoothed(polygon);
 		if ($('#both').is(':checked')) {
-			drawNormal(polygon, latLngs);
+			numPoints += '<br/>non-smooth: ' + drawNormal(polygon, latLngs) + '<br>';
 		}
+		numPoints += 'smooth: ' + drawSmoothed(polygon);
 	} else {
-		drawNormal(polygon, latLngs)
+		numPoints +=  drawNormal(polygon, latLngs);
 	}
+	$('#numPoints').html(numPoints);
 
 }
 drawNormal = function (polygon, latLngs){
@@ -70,6 +71,7 @@ drawNormal = function (polygon, latLngs){
 	for (let i = 0; i < latLngs[0].length; i++) {
 		polys.addLayer(L.circleMarker(latLngs[0][i], {radius: 2}));
 	}
+	return latLngs[0].length;
 }
 drawSmoothed = function (polygon) {
 	const smoothedLatLngs = (turf.flip(turf.polygonSmooth(polygon.toGeoJSON(), {iterations:3}))).features[0].geometry.coordinates;
@@ -78,4 +80,5 @@ drawSmoothed = function (polygon) {
 	for (let i = 0; i < smoothedLatLngs[0].length; i++) {
 		polys.addLayer(L.circleMarker(smoothedLatLngs[0][i], {radius: 2, color: 'green'}));
 	}
+	return smoothedLatLngs[0].length;
 }
