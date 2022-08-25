@@ -1,0 +1,39 @@
+html, body {
+	margin: 0;
+	padding: 0;
+	position: relative;
+	font-family: Calibri, Arial;
+
+}
+.map {
+	width: 100vw;
+	height: 100vh;
+}
+
+.map.mode-create {
+	cursor: crosshair;
+}
+.controls{
+	position: absolute;
+	right:0;
+	top:0;
+	width: 13em;
+	height: 15em;
+	padding:1em;
+	z-index: 999;
+	background: white;
+	box-shadow: 0 0 10px 5px #ccc;
+}
+.box {
+	display: block;
+	padding:0.5em;
+	color: white;
+	margin-bottom:0.2em;
+}
+.blue {
+	background-color: #3388ff;
+}
+.green {
+	background-color: green;
+
+}
