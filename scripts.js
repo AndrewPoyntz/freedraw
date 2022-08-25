@@ -2,7 +2,7 @@ const LAT_LNG = [53.905, -3.2];
 const TILE_URL = 'https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}@2x.png';
 let map;
 let freeDraw;
-eventFired = false;
+drawing = true;
 const polys = L.featureGroup()
 $(document).ready(function() {
 	const sliderCookie = Cookies.get('slider')
@@ -30,7 +30,16 @@ $(document).ready(function() {
 	});
 	$('#clear').click(function() {
 		polys.clearLayers();
-
+	});
+	$('#Draw').click(function(){
+		if (drawing) {
+			freeDraw.mode(FreeDraw.NONE);
+			$(this).html('Drawing (off)');
+		} else {
+			freeDraw.mode(FreeDraw.ALL);
+			$(this).html('Drawing (on)');
+		}
+		drawing = !drawing;
 	})
 	map = new L.Map(document.querySelector('section.map'), { doubleClickZoom: false }).setView(LAT_LNG, 6);
 	L.tileLayer(TILE_URL).addTo(map);
