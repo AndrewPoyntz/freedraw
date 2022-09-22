@@ -3,47 +3,89 @@ const TILE_URL = 'https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}
 let map;
 let freeDraw;
 drawing = true;
-const polys = L.featureGroup()
+const current = L.featureGroup();
+const smooth = L.featureGroup();
+const currentPoints = L.featureGroup();
+const smoothPoints = L.featureGroup();
 $(document).ready(function() {
+	map = new L.Map(document.querySelector('section.map'), { doubleClickZoom: false }).setView(LAT_LNG, 6);
+	L.tileLayer(TILE_URL).addTo(map);
 	const sliderCookie = Cookies.get('slider')
 	const sliderValue = (sliderCookie) ? parseFloat(sliderCookie) : 1;
+	const toggleDrawing = function () {
+		if (drawing) {
+			freeDraw.mode(FreeDraw.NONE);
+			$('#Draw').html('Drawing (off)');
+		} else {
+			freeDraw.mode(FreeDraw.ALL);
+			$('#Draw').html('Drawing (on)');
+		}
+		drawing = !drawing;
 
-	$('#slider').slider({
-		min:0,
-		max:3,
-		step:0.1,
-		value:sliderValue,
-		change: function( event, ui ) {
-			Cookies.set('slider', ui.value);
-			location.reload();
+	}
+	$(document).keypress(function (e) {
+		if (e.keyCode = 32){
+			toggleDrawing();
+		}
+	})
+	if($('#current').is(':checked')) {
+		current.addTo(map);
+	}
+	$('#current').change(function () {
+		if ($(this).is(':checked')) {
+			if($('#points').is(':checked')){
+				currentPoints.addTo(map);
+			}
+			current.addTo(map);
+		} else {
+			current.remove();
+			currentPoints.remove()
 		}
 	});
-	if ($('#smoothing').is(':checked')){
-		$('#showBoth').show();
+	if($('#smooth').is(':checked')) {
+		smooth.addTo(map);
 	}
-	$('#smoothing').change(function () {
+	$('#smooth').change(function () {
 		if ($(this).is(':checked')) {
-			$('#showBoth').show();
+			if($('#points').is(':checked')){
+				smoothPoints.addTo(map);
+			}
+			smooth.addTo(map);
 		} else {
-			$('#showBoth').hide();
+			smooth.remove();
+			smoothPoints.remove();
+		}
+	});
+	if($('#points').is(':checked')){
+		if($('#smooth').is(':checked')) {
+			smoothPoints.addTo(map);
+		}
+		if($('#current').is(':checked')) {
+			currentPoints.addTo(map);
+		}
+	}
+	$('#points').change(function () {
+		if ($(this).is(':checked')) {
+			if($('#smooth').is(':checked')) {
+				smoothPoints.addTo(map);
+			}
+			if($('#current').is(':checked')) {
+				currentPoints.addTo(map);
+			}
+		} else {
+			currentPoints.remove();
+			smoothPoints.remove();
 		}
 	});
 	$('#clear').click(function() {
-		polys.clearLayers();
+		current.clearLayers();
+		smooth.clearLayers();
+		currentPoints.clearLayers();
+		smoothPoints.clearLayers();
 	});
 	$('#Draw').click(function(){
-		if (drawing) {
-			freeDraw.mode(FreeDraw.NONE);
-			$(this).html('Drawing (off)');
-		} else {
-			freeDraw.mode(FreeDraw.ALL);
-			$(this).html('Drawing (on)');
-		}
-		drawing = !drawing;
+		toggleDrawing();
 	})
-	map = new L.Map(document.querySelector('section.map'), { doubleClickZoom: false }).setView(LAT_LNG, 6);
-	L.tileLayer(TILE_URL).addTo(map);
-	polys.addTo(map);
 	addFreedraw(sliderValue);
 	freeDraw.on('markers', freedrawEvent)
 
@@ -60,34 +102,29 @@ freedrawEvent = function(event) {
 }
 drawPoly = function (latLngs) {
 	// console.log('create poly with', latLngs)
-	let numPoints = 'Points in last drawn shape:'
 	const polygon = L.polygon(latLngs);
 	// console.log(polygon.toGeoJSON())
-
-	if ($('#smoothing').is(':checked'))  {
-		if ($('#both').is(':checked')) {
-			numPoints += '<br/>non-smooth: ' + drawNormal(polygon, latLngs) + '<br>';
-		}
-		numPoints += 'smooth: ' + drawSmoothed(polygon);
-	} else {
-		numPoints +=  drawNormal(polygon, latLngs);
-	}
+	const normal = drawNormal(polygon, latLngs);
+	const smoothed = drawSmoothed(polygon, latLngs);
+	let numPoints = 'Points in last drawn shape:' +
+		'<br/>non-smooth: ' + normal + '<br>' +
+		'smooth: ' + smoothed;
 	$('#numPoints').html(numPoints);
 
 }
 drawNormal = function (polygon, latLngs){
-	polys.addLayer(polygon);
+	current.addLayer(polygon);
 	for (let i = 0; i < latLngs[0].length; i++) {
-		polys.addLayer(L.circleMarker(latLngs[0][i], {radius: 2}));
+		currentPoints.addLayer(L.circleMarker(latLngs[0][i], {radius: 2}));
 	}
 	return latLngs[0].length;
 }
 drawSmoothed = function (polygon) {
 	const smoothedLatLngs = (turf.flip(turf.polygonSmooth(polygon.toGeoJSON(), {iterations:3}))).features[0].geometry.coordinates;
 	// console.log(smoothedLatLngs);
-	polys.addLayer(L.polygon(smoothedLatLngs, {color:'green'}))
+	smooth.addLayer(L.polygon(smoothedLatLngs, {color:'green', weight: 2, opacity:0.7}))
 	for (let i = 0; i < smoothedLatLngs[0].length; i++) {
-		polys.addLayer(L.circleMarker(smoothedLatLngs[0][i], {radius: 2, color: 'green'}));
+		smoothPoints.addLayer(L.circleMarker(smoothedLatLngs[0][i], {radius: 1, color: 'green'}));
 	}
 	return smoothedLatLngs[0].length;
 }

@@ -17,18 +17,15 @@
 <section class="map"></section>
 <section class="controls">
 	<div id="key">
-		<span class="box blue">Current</span>
-		<span class="box green">Smoothed</span>
+		<span class="box blue"><input type="checkbox" name="current" id="current" checked/><label for="current">Current</label></span>
+		<span class="box green"><input type="checkbox" name="smooth" id="smooth" checked/><label for="smooth">Smoothed</label></span>
 	</div>
-<!--	<p>Simplfy factor 0<div id="slider"></div>4</p>-->
-	<p><label for="smoothing">Turn on smoothing?</label>
-		<input type="checkbox" name="smoothing" id="smoothing"></label></p>
-	<p id="showBoth" style="display: none"><label for="both">Show both smoothed and original when drawing?</label>
-		<input type="checkbox" name="both" id="both" checked></label></p>
+	<p id="showpoints"><label for="points">Show points</label>
+		<input type="checkbox" name="points" id="points" checked></label></p>
 
 	<p id="numPoints"></p>
 
-	<button id="Draw">Drawing (on)</button> <button id="clear">Clear all shapes</button>
+	<button id="Draw" title="toggle drawing (shortcut: spacebar)">Drawing (on)</button> <button id="clear">Clear all shapes</button>
 </section>
 </body>
 <script src="scripts.js"></script>
