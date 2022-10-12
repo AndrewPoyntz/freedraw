@@ -35,5 +35,26 @@ html, body {
 }
 .green {
 	background-color: green;
+}
 
+.leaflet-vertex-icon {
+	border-radius: 50%;
+	cursor: move;
+}
+.leaflet-middle-icon {
+	border-radius: 50%;
+	cursor: copy;
+}
+
+.leaflet-middle-icon:before {
+	 color: #999;
+	 content: "+";
+	 display: block;
+	 position: absolute;
+	 font-size: 2.1em;
+	 top: -0.61em;
+	 left: -0.06em;
+}
+.leaflet-interactive {
+	cursor: inherit;
 }

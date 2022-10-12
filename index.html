@@ -9,6 +9,8 @@
 	<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js" integrity="sha512-wT7uPE7tOP6w4o28u1DN775jYjHQApdBnib5Pho4RB0Pgd9y7eSkAV1BTqQydupYDB9GBhTcQQzyNMPMV3cAew==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="rtree.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-editable/1.2.0/Leaflet.Editable.min.js" integrity="sha512-QpANYNI4879TA/KVcjagBEb/XjOEzSg9Ge7DKWnLHEKaotUL0S0jOaKgxktFxsY7Lo5YTRXRFt/VHpEg4ifd5Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.2/leaflet.css" type="text/css">
 	<link rel="stylesheet" href="styles.css" type="text/css">
@@ -16,16 +18,10 @@
 <body>
 <section class="map"></section>
 <section class="controls">
-	<div id="key">
-		<span class="box blue"><input type="checkbox" name="current" id="current" checked/><label for="current">Current</label></span>
-		<span class="box green"><input type="checkbox" name="smooth" id="smooth" checked/><label for="smooth">Smoothed</label></span>
-	</div>
 	<p id="showpoints"><label for="points">Show points</label>
 		<input type="checkbox" name="points" id="points" checked></label></p>
-
-	<p id="numPoints"></p>
-
-	<button id="Draw" title="toggle drawing (shortcut: spacebar)">Drawing (on)</button> <button id="clear">Clear all shapes</button>
+	<button id="Draw" title="toggle drawing (shortcut: spacebar)">Drawing is on</button> <button id="clear">Clear all shapes</button>
+	<button id="Edit" title="toggle Editing">Editing is off</button>
 </section>
 </body>
 <script src="scripts.js"></script>
