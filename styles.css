@@ -18,11 +18,24 @@ html, body {
 	right:0;
 	top:0;
 	width: 13em;
-	height: 16 em;
+	height: 12em;
 	padding:1em;
 	z-index: 999;
 	background: white;
 	box-shadow: 0 0 10px 5px #ccc;
+}
+button {
+	padding:0.5em;
+	border:none;
+	border-radius: 3px;
+	margin: 0.5em 0;
+	width:100%;
+	cursor:pointer;
+}
+.on {
+	background-color: #3388ff;
+	color: white;
+
 }
 .box {
 	display: block;

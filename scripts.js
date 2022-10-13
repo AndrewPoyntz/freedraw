@@ -193,10 +193,10 @@ formListeners = function () {
 		drawing = (typeof on === 'undefined')? !drawing : on;
 		if (!drawing) {
 			freeDraw.mode(FreeDraw.NONE);
-			$('#Draw').html('Drawing is off');
+			$('#Draw').html('Drawing is off').removeClass('on');
 		} else {
 			freeDraw.mode(FreeDraw.ALL);
-			$('#Draw').html('Drawing is on');
+			$('#Draw').html('Drawing is on').addClass('on');
 		}
 	}
 	const toggleEditMode = function (on){
@@ -210,10 +210,10 @@ formListeners = function () {
 		controlShapes.eachLayer((layer) => {
 			if (editing) {
 				layer.enableEdit();
-				$('#Edit').html('Editing is on');
+				$('#Edit').html('Editing is on').addClass('on');
 			} else {
 				layer.disableEdit();
-				$('#Edit').html('Editing is off');
+				$('#Edit').html('Editing is off').removeClass('on');
 			}
 		});
 	}
