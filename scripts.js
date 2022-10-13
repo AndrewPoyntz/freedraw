@@ -78,9 +78,8 @@ freedrawEvent = function(event) {
 	}
 }
 drawPolygons = function (latLngs) {
-	// console.log('create poly with', latLngs)
 	mergePolygons(latLngs);
-	console.log('draw', rawPolys);
+	// console.log('draw', rawPolys);
 	createControlShape();
 
 }
@@ -88,9 +87,7 @@ createControlShape = function (){
 	const polygon = L.polygon(rawPolys, {opacity: 0.8, weight:1, dashArray:4, fill:false});
 	controlShapes.clearLayers();
 	controlShapes.addLayer(polygon);
-	// for (let i = 0; i < latLngs[0].length; i++) {
-	// 	currentPoints.addLayer(L.circleMarker(latLngs[0][i], {radius: 2}));
-	// }
+
 	controlShapes.eachLayer((layer) => {
 		if (editing) {
 			layer.enableEdit();
@@ -111,7 +108,7 @@ mergePolygons = function (latLngs) {
 		try {
 			// for each one, try a turf.union with the new shape
 			// each iteration of the loop overwrites 'polygon' with the result, resulting in a cumulative merge
-			console.log('merging', 'existing:', (L.polygon(existingLatLngs).toGeoJSON()).geometry.coordinates, 'new', polygon.geometry.coordinates, turf.union(polygon, L.polygon(existingLatLngs).toGeoJSON()))
+			// console.log('merging', 'existing:', (L.polygon(existingLatLngs).toGeoJSON()).geometry.coordinates, 'new', polygon.geometry.coordinates, turf.union(polygon, L.polygon(existingLatLngs).toGeoJSON()))
 
 			polygon = turf.union(polygon, L.polygon(existingLatLngs).toGeoJSON());
 		} catch (e) {
@@ -188,7 +185,7 @@ handleShapeEdits = function (){
 		}
 	});
 	rawPolys = turf.flip(polygon).geometry.coordinates;
-	console.log('edit', rawPolys);
+	// console.log('edit', rawPolys);
 	mergePolygons(rawPolys);
 	createControlShape();
 }
@@ -199,13 +196,10 @@ snapPolygons = function (polygon) {
 	polygon = turf.difference(polygon, existingPolygon.toGeoJSON());
 	try {
 		// find & remove kinks/selfIntersections after snapping
-		console.log('diff done?', polygon);
 		const kinks = turf.kinks(polygon);
 		if (kinks.features.length > 0) {
-			console.log('found kinks')
 			polygon = turf.buffer(polygon, 0, {units:'meters'});
 		}
-		console.log('flpping');
 		return polygon;
 	} catch (e) {
 		// ¯\_(ツ)_/¯ can't snap an empty polygon
