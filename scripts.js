@@ -11,10 +11,11 @@ const snapGeometry = [[55.59076338488528,-6.586303710937501],[55.606281251302114
 const existingPolygon = L.polygon(snapGeometry,
 	{color: '#FFE923', weight: 2, fillOpacity: 0.5, fillColor: '#FFE923'});
 let snapTo = false;
+let cutCoastline = false;
 let rawPolys = [];
 let rTree;
 let affectedRegionIDs = []
-
+let coastCutArea;
 function getRegions() {
 	return fetch('UK_Child_Regions.geojson')
 		.then(function(response) {
@@ -36,10 +37,41 @@ const regionStyle = function (feature) {
 	}
 	return styleOptions;
 }
+const getCoastline = function (regions) {
+	// let coastline;
+	// let doneOne = false;
+	// for (let feature of regions.features){
+	// 	let region = L.polygon(feature.geometry.coordinates).toGeoJSON();
+	// 	// if (!doneOne) {
+	// 	// 	region = turf.flip(turf.simplify(turf.buffer(region, 3, {units: 'kilometers'}), { tolerance: 0.005 }));
+	// 	// 	// console.log(region)
+	// 	// 	L.geoJSON(region, {style:{color:'red', weight:2}}).addTo(map);
+	// 	// 	doneOne = true;
+	// 	// }
+	// 	coastline = (coastline) ? turf.union(coastline, region) : region;
+	// }
+	// coastline =  turf.flip(turf.simplify(turf.buffer(coastline, 6, {units: 'kilometers'}), { tolerance: 0.005 }));
+	// console.log(coastline);
+	// L.geoJSON(coastline, {style:{color:'red', weight:2}}).addTo(map);
+	return fetch('simpleCoastline.geojson')
+		.then(function(response) {
+			return response.json();
+		});
+}
 $(document).ready(async function() {
 	rTree = RTree(20);
 	map = new L.Map(document.querySelector('section.map'), { doubleClickZoom: false, editable:true }).setView(LAT_LNG, 6);
 	const regionData = await getRegions();
+	// console.log(getCoastline(regionData));
+	let coastlineData = await getCoastline(regionData);
+	// console.log(coastlineData);
+	const cutArea = L.polygon([[45,-20], [65,-20], [65, 15], [45, 15], [45,-20]]);
+
+	coastCutArea = turf.difference(cutArea.toGeoJSON(), coastlineData);
+
+	// const coastlinecut = L.geoJSON(coastCutArea, {style:{color:'red', weight:2}}).addTo(map);
+	// const coastline = L.geoJSON(coastlineData, {style:{color:'red', weight:2}}).addTo(map);
+
 	rTree.geoJSON(regionData)
 	regions = L.geoJSON(regionData, {
 		style: regionStyle
@@ -78,8 +110,9 @@ freedrawEvent = function(event) {
 	}
 }
 drawPolygons = function (latLngs) {
+	console.log(latLngs);
 	mergePolygons(latLngs);
-	// console.log('draw', rawPolys);
+	console.log('draw', rawPolys);
 	createControlShape();
 
 }
@@ -118,6 +151,9 @@ mergePolygons = function (latLngs) {
 	});
 	if (snapTo){
 		polygon = snapPolygons(polygon);
+	}
+	if(cutCoastline){
+		polygon = cutOutCoastline(polygon);
 	}
 	rawPolys = turf.flip(polygon).geometry.coordinates;
 }
@@ -206,6 +242,10 @@ snapPolygons = function (polygon) {
 		return [];
 	}
 }
+cutOutCoastline = function (polygon) {
+	console.log(typeof polygon)
+	return turf.difference(polygon, coastCutArea);
+}
 
 formListeners = function () {
 	const toggleDrawing = function (on) {
@@ -259,6 +299,18 @@ formListeners = function () {
 		} else {
 			existingPolygon.remove();
 			snapTo = false;
+		}
+	});
+	if($('#cutCoast').is(':checked')){
+		cutCoastline = true;
+	}
+	$('#cutCoast').change(function () {
+		if ($(this).is(':checked')) {
+			cutCoastline = true;
+			mergePolygons(rawPolys);
+			createControlShape();
+		} else {
+			cutCoastline = false;
 		}
 	});
 	$('#clear').click(function() {
