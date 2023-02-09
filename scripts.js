@@ -110,9 +110,7 @@ freedrawEvent = function(event) {
 	}
 }
 drawPolygons = function (latLngs) {
-	console.log(latLngs);
 	mergePolygons(latLngs);
-	console.log('draw', rawPolys);
 	createControlShape();
 
 }
@@ -249,6 +247,7 @@ cutOutCoastline = function (polygon) {
 
 formListeners = function () {
 	const toggleDrawing = function (on) {
+		console.log('draing', on)
 		drawing = (typeof on === 'undefined')? !drawing : on;
 		if (!drawing) {
 			freeDraw.mode(FreeDraw.NONE);
@@ -329,6 +328,7 @@ formListeners = function () {
 
 	$(document).keypress(function (e) {
 		if (e.keyCode === 32){
+			e.stopPropagation();
 			toggleDrawing(!drawing);
 			if (editing){
 				toggleEditMode(false);
